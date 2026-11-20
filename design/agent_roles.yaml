@@ -1,0 +1,46 @@
+version: '1.0'
+state: design_not_deployed
+master:
+  name: master_ai_controller
+  goal: Coordinate validated, policy-authorized marketing tasks.
+  reads: [organizations, marketing_policies, campaigns, agent_jobs, audit_events]
+  writes: [agent_jobs, audit_events]
+  tools: [retrieve_business_context, ask_specialist, propose_actions, request_approval, show_status]
+specialists:
+  - id: product_intelligence
+    memory: [products, product_assets]
+    output: ProductProfile
+    tools: [read_drive_asset, parse_catalogue, propose_product_revision]
+  - id: market_research
+    memory: [markets, market_findings]
+    output: MarketFinding
+    tools: [search_public_sources, save_cited_finding]
+  - id: festival_intelligence
+    memory: [seasonal_events, market_findings]
+    output: SeasonalOpportunity
+    tools: [verify_calendar_event, propose_campaign_window]
+  - id: campaign_strategist
+    memory: [campaigns, campaign_targets, learning_records]
+    output: CampaignPlan
+    tools: [read_business_kpis, plan_experiment, propose_campaign]
+  - id: creative_studio
+    memory: [product_assets, content_variants, marketing_policies]
+    output: CreativeVariant
+    tools: [read_brand_assets, generate_creative_draft, save_variant]
+  - id: qa_publisher
+    memory: [content_variants, approvals, publications]
+    output: PublicationRequest
+    tools: [validate_brand_claims, check_media_constraints, request_approval, publish_via_adapter]
+  - id: analytics
+    memory: [metric_snapshots, lead_events, publications]
+    output: PerformanceAssessment
+    tools: [read_omnisocials_analytics, read_permitted_inbox, normalize_metrics]
+  - id: learning_optimizer
+    memory: [experiments, learning_records, market_findings]
+    output: LearningProposal
+    tools: [compare_cohorts, propose_next_experiment, append_learning]
+default_approval_policy:
+  auto: [research, draft, analytics_sync, propose_strategy]
+  review: [organic_publish, revise_scheduled_post, customer_reply]
+  elevated_review: [paid_ad_spend, delete, change_policy, credentials]
+  enforce_in: backend
